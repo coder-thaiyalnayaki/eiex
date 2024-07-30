@@ -1,0 +1,64 @@
+import java.util.ArrayList;
+import java.util.List;
+
+interface Observer {
+    void update(String stockSymbol, double price);
+}
+
+class Stock {
+    private String symbol;
+    private double price;
+    private List<Observer> observers = new ArrayList<>();
+
+    public Stock(String symbol, double price) {
+        this.symbol = symbol;
+        this.price = price;
+    }
+
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+        notifyObservers();
+    }
+
+    private void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update(symbol, price);
+        }
+    }
+}
+
+class Investor implements Observer {
+    private String name;
+
+    public Investor(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void update(String stockSymbol, double price) {
+        System.out.println("Notification to " + name + ": Stock " + stockSymbol + " is now $" + price);
+    }
+}
+
+public class ObserverPatternDemo {
+    public static void main(String[] args) {
+        Stock apple = new Stock("AAPL", 150.0);
+
+        Investor investor1 = new Investor("Alice");
+        Investor investor2 = new Investor("Bob");
+
+        apple.addObserver(investor1);
+        apple.addObserver(investor2);
+
+        apple.setPrice(155.0);
+        apple.setPrice(160.0);
+    }
+}
